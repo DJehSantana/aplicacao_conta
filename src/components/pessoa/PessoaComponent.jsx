@@ -17,6 +17,7 @@ function PessoaComponent() {
       estado: ''
     }
   });
+  const [pessoaSelecionada, setPessoaSelecionada] = useState(null);
 
   useEffect(() => {
     const carregarPessoas = async () => {
@@ -35,15 +36,48 @@ function PessoaComponent() {
     carregarPessoas();
   }, []);
 
-  // // Exemplo de cadastro de pessoa
-  // const handleSubmit = async (pessoaData) => {
-  //   try {
-  //     const novaPessoa = await pessoaService.cadastrarAtualizarPessoa(pessoaData);
-  //     // Atualizar estado ou fazer algo com a resposta
-  //   } catch (err) {
-  //     setError(err.message);
+  // Função para editar pessoa
+  const handleEditar = (pessoa) => {
+    setPessoaSelecionada(pessoa);
+    setFormData({
+      nome: pessoa.nome,
+      cpf: pessoa.cpf,
+      dataNascimento: pessoa.dataNascimento,
+      endereco: {
+        cep: pessoa.endereco.cep,
+        rua: pessoa.endereco.rua,
+        numero: pessoa.endereco.numero,
+        cidade: pessoa.endereco.cidade,
+        estado: pessoa.endereco.estado
+      }
+    });
+    // Scroll para o formulário
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+
+  // // Função para excluir pessoa
+  // const handleExcluir = async (id) => {
+  //   if (window.confirm('Tem certeza que deseja excluir esta pessoa?')) {
+  //     try {
+  //       await pessoaService.excluirPessoa(id);
+  //       setPessoas(pessoas.filter(pessoa => pessoa.id !== id));
+  //     } catch (err) {
+  //       setError(err.message);
+  //     }
   //   }
   // };
+
+   // Função para formatar CPF
+  const formatarCpf = (cpf) => {
+    return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+  };
+
+  // Função para formatar endereço
+  const formatarEndereco = (cidade, estado) => {
+    return `${cidade}/${estado}`;
+  };
+
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -87,168 +121,243 @@ function PessoaComponent() {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="d-flex justify-content-center">
-        <div className="spinner-border" role="status">
-          <span className="visually-hidden">Carregando...</span>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="container py-4">
-      <div className="row justify-content-center">
-        <div className="col-12 col-md-10 col-lg-8">
-          <div className="card shadow">
-            <div className="card-body">
-              <h2 className="card-title text-center mb-4">Cadastro de Pessoas</h2>
-
-              {error && (
-                <div className="alert alert-danger" role="alert">
-                  {error}
-                </div>
-              )}
-
-              <form onSubmit={handleSubmit}>
-                {/* Dados Pessoais */}
-                <div className="mb-4">
-                  <h4 className="mb-3">Dados Pessoais</h4>
-                  <div className="row g-3">
-                    <div className="col-12">
-                      <label htmlFor="nome" className="form-label">Nome</label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        id="nome"
-                        name="nome"
-                        value={formData.nome}
-                        onChange={handleInputChange}
-                        required
-                      />
-                    </div>
-
-                    <div className="col-md-6">
-                      <label htmlFor="cpf" className="form-label">CPF</label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        id="cpf"
-                        name="cpf"
-                        value={formData.cpf}
-                        onChange={handleInputChange}
-                        required
-                      />
-                    </div>
-
-                    <div className="col-md-6">
-                      <label htmlFor="dataNascimento" className="form-label">Data de Nascimento</label>
-                      <input
-                        type="date"
-                        className="form-control"
-                        id="dataNascimento"
-                        name="dataNascimento"
-                        value={formData.dataNascimento}
-                        onChange={handleInputChange}
-                        required
-                      />
+      <div className="container-fluid bg-light min-vh-100 py-5">
+        <div className="row justify-content-center">
+          <div className="col-12 col-xl-10">
+            <div className="card shadow-lg border-0">
+              <div className="card-header bg-primary text-white py-4">
+                <h2 className="text-center mb-0">Cadastro de Pessoas</h2>
+              </div>
+              
+              <div className="card-body p-5">
+                {error && (
+                  <div className="alert alert-danger mb-4" role="alert">
+                    {error}
+                  </div>
+                )}
+  
+                <form onSubmit={handleSubmit}>
+                  {/* Dados Pessoais */}
+                  <div className="mb-5">
+                    <h4 className="mb-4 pb-2 border-bottom">Dados Pessoais</h4>
+                    <div className="row g-4">
+                      <div className="col-12">
+                        <div className="form-floating">
+                          <input
+                            type="text"
+                            className="form-control form-control-lg"
+                            id="nome"
+                            name="nome"
+                            placeholder="Nome completo"
+                            value={formData.nome}
+                            onChange={handleInputChange}
+                            required
+                          />
+                          <label htmlFor="nome">Nome completo</label>
+                        </div>
+                      </div>
+  
+                      <div className="col-md-6">
+                        <div className="form-floating">
+                          <input
+                            type="text"
+                            className="form-control form-control-lg"
+                            id="cpf"
+                            name="cpf"
+                            placeholder="CPF"
+                            value={formData.cpf}
+                            onChange={handleInputChange}
+                            required
+                          />
+                          <label htmlFor="cpf">CPF</label>
+                        </div>
+                      </div>
+  
+                      <div className="col-md-6">
+                        <div className="form-floating">
+                          <input
+                            type="date"
+                            className="form-control form-control-lg"
+                            id="dataNascimento"
+                            name="dataNascimento"
+                            value={formData.dataNascimento}
+                            onChange={handleInputChange}
+                            required
+                          />
+                          <label htmlFor="dataNascimento">Data de Nascimento</label>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-
-                {/* Endereço */}
-                <div className="mb-4">
-                  <h4 className="mb-3">Endereço</h4>
-                  <div className="row g-3">
-                    <div className="col-md-4">
-                      <label htmlFor="cep" className="form-label">CEP</label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        id="cep"
-                        name="endereco.cep"
-                        value={formData.endereco.cep}
-                        onChange={handleInputChange}
-                        required
-                      />
-                    </div>
-
-                    <div className="col-md-8">
-                      <label htmlFor="rua" className="form-label">Rua</label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        id="rua"
-                        name="endereco.rua"
-                        value={formData.endereco.rua}
-                        onChange={handleInputChange}
-                        required
-                      />
-                    </div>
-
-                    <div className="col-md-4">
-                      <label htmlFor="numero" className="form-label">Número</label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        id="numero"
-                        name="endereco.numero"
-                        value={formData.endereco.numero}
-                        onChange={handleInputChange}
-                        required
-                      />
-                    </div>
-
-                    <div className="col-md-5">
-                      <label htmlFor="cidade" className="form-label">Cidade</label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        id="cidade"
-                        name="endereco.cidade"
-                        value={formData.endereco.cidade}
-                        onChange={handleInputChange}
-                        required
-                      />
-                    </div>
-
-                    <div className="col-md-3">
-                      <label htmlFor="estado" className="form-label">Estado</label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        id="estado"
-                        name="endereco.estado"
-                        value={formData.endereco.estado}
-                        onChange={handleInputChange}
-                        required
-                      />
+  
+                  {/* Endereço */}
+                  <div className="mb-5">
+                    <h4 className="mb-4 pb-2 border-bottom">Endereço</h4>
+                    <div className="row g-4">
+                      <div className="col-md-4">
+                        <div className="form-floating">
+                          <input
+                            type="text"
+                            className="form-control form-control-lg"
+                            id="cep"
+                            name="endereco.cep"
+                            placeholder="CEP"
+                            value={formData.endereco.cep}
+                            onChange={handleInputChange}
+                            required
+                          />
+                          <label htmlFor="cep">CEP</label>
+                        </div>
+                      </div>
+  
+                      <div className="col-md-8">
+                        <div className="form-floating">
+                          <input
+                            type="text"
+                            className="form-control form-control-lg"
+                            id="rua"
+                            name="endereco.rua"
+                            placeholder="Rua"
+                            value={formData.endereco.rua}
+                            onChange={handleInputChange}
+                            required
+                          />
+                          <label htmlFor="rua">Rua</label>
+                        </div>
+                      </div>
+  
+                      <div className="col-md-4">
+                        <div className="form-floating">
+                          <input
+                            type="text"
+                            className="form-control form-control-lg"
+                            id="numero"
+                            name="endereco.numero"
+                            placeholder="Número"
+                            value={formData.endereco.numero}
+                            onChange={handleInputChange}
+                            required
+                          />
+                          <label htmlFor="numero">Número</label>
+                        </div>
+                      </div>
+  
+                      <div className="col-md-5">
+                        <div className="form-floating">
+                          <input
+                            type="text"
+                            className="form-control form-control-lg"
+                            id="cidade"
+                            name="endereco.cidade"
+                            placeholder="Cidade"
+                            value={formData.endereco.cidade}
+                            onChange={handleInputChange}
+                            required
+                          />
+                          <label htmlFor="cidade">Cidade</label>
+                        </div>
+                      </div>
+  
+                      <div className="col-md-3">
+                        <div className="form-floating">
+                          <input
+                            type="text"
+                            className="form-control form-control-lg"
+                            id="estado"
+                            name="endereco.estado"
+                            placeholder="Estado"
+                            value={formData.endereco.estado}
+                            onChange={handleInputChange}
+                            required
+                          />
+                          <label htmlFor="estado">Estado</label>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-
-                <div className="d-grid gap-2">
-                  <button 
-                    type="submit" 
-                    className="btn btn-primary btn-lg"
-                    disabled={loading}
-                  >
-                    {loading ? (
-                      <>
-                        <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                        Salvando...
-                      </>
-                    ) : 'Cadastrar'}
-                  </button>
-                </div>
-              </form>
+  
+                  <div className="d-grid gap-2 mt-5">
+                    <button 
+                      type="submit" 
+                      className="btn btn-primary btn-lg py-3"
+                      disabled={loading}
+                    >
+                      {loading ? (
+                        <>
+                          <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                          Salvando...
+                        </>
+                      ) : 'Cadastrar Pessoa'}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+            <div className="card shadow-lg border-0">
+              <div className="card-header bg-primary text-white py-4">
+                <h2 className="text-center mb-0">Pessoas Cadastradas</h2>
+              </div>
+              
+              <div className="card-body p-4">
+                {pessoas.length > 0 ? (
+                  <div className="table-responsive">
+                    <table className="table table-hover">
+                      <thead>
+                        <tr>
+                          <th>Nome</th>
+                          <th>CPF</th>
+                          <th>Localização</th>
+                          <th className="text-center">Ações</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {pessoas.map((pessoa) => (
+                          <tr key={pessoa.id}>
+                            <td>{pessoa.nome}</td>
+                            <td>{formatarCpf(pessoa.cpf)}</td>
+                            <td>
+                              {formatarEndereco(
+                                pessoa.endereco.cidade,
+                                pessoa.endereco.estado
+                              )}
+                            </td>
+                            <td>
+                              <div className="d-flex justify-content-center gap-3">
+                                <button
+                                  className="btn btn-sm btn-outline-primary"
+                                  onClick={() => handleEditar(pessoa)}
+                                  title="Editar"
+                                >
+                                  <FontAwesomeIcon icon={faPen} />
+                                </button>
+                                <button
+                                  className="btn btn-sm btn-outline-danger"
+                                  onClick={() => handleExcluir(pessoa.id)}
+                                  title="Excluir"
+                                >
+                                  <FontAwesomeIcon icon={faTrash} />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <div className="text-center py-5">
+                    <p className="text-muted mb-0">
+                      Nenhuma pessoa cadastrada ainda.
+                    </p>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  );
+    );
 
   // if (loading) return <div>Carregando...</div>;
   // if (error) return <div className="error">Erro: {error}</div>;

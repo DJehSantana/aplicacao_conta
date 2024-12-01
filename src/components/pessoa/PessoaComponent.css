@@ -1,16 +1,31 @@
+/* PessoaComponent.css */
 .card {
-  border: none;
-  border-radius: 10px;
+  border-radius: 15px;
+  overflow: hidden;
 }
 
-.card-title {
-  color: #2c3e50;
+.card-header {
+  background: linear-gradient(45deg, #2980b9, #3498db) !important;
+}
+
+.card-header h2 {
   font-weight: 600;
+  font-size: 2rem;
 }
 
-.form-label {
-  font-weight: 500;
-  color: #34495e;
+.form-control-lg {
+  padding: 1rem 0.75rem;
+  font-size: 1rem;
+  border-radius: 8px;
+}
+
+.form-floating label {
+  padding-left: 1rem;
+}
+
+.form-floating > .form-control:focus ~ label,
+.form-floating > .form-control:not(:placeholder-shown) ~ label {
+  transform: scale(0.85) translateY(-0.75rem) translateX(0.15rem);
 }
 
 .form-control:focus {
@@ -18,16 +33,49 @@
   box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25);
 }
 
+h4 {
+  color: #2c3e50;
+  font-weight: 600;
+}
+
 .btn-primary {
-  background-color: #3498db;
-  border-color: #3498db;
+  background: linear-gradient(45deg, #2980b9, #3498db);
+  border: none;
+  font-weight: 500;
+  font-size: 1.1rem;
 }
 
 .btn-primary:hover {
-  background-color: #2980b9;
-  border-color: #2980b9;
+  background: linear-gradient(45deg, #2472a4, #2980b9);
+}
+
+.btn-primary:focus {
+  box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25);
 }
 
 .alert {
-  border-radius: 8px;
+  border-radius: 10px;
+  padding: 1rem 1.5rem;
+}
+
+/* Adicionar animação suave nos inputs */
+.form-control {
+  transition: all 0.3s ease;
+}
+
+/* Estilo para campos obrigatórios */
+.form-floating input:required + label::after {
+  content: " *";
+  color: #dc3545;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .card-body {
+    padding: 2rem !important;
+  }
+  
+  .card-header h2 {
+    font-size: 1.5rem;
+  }
 }
