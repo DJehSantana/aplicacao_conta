@@ -18,6 +18,10 @@ function PessoaComponent() {
     }
   });
   const [pessoaSelecionada, setPessoaSelecionada] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [pessoaParaExcluir, setPessoaParaExcluir] = useState(null);
 
   useEffect(() => {
     const carregarPessoas = async () => {
@@ -54,19 +58,6 @@ function PessoaComponent() {
     // Scroll para o formulário
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
-
-
-  // // Função para excluir pessoa
-  // const handleExcluir = async (id) => {
-  //   if (window.confirm('Tem certeza que deseja excluir esta pessoa?')) {
-  //     try {
-  //       await pessoaService.excluirPessoa(id);
-  //       setPessoas(pessoas.filter(pessoa => pessoa.id !== id));
-  //     } catch (err) {
-  //       setError(err.message);
-  //     }
-  //   }
-  // };
 
    // Função para formatar CPF
   const formatarCpf = (cpf) => {
@@ -119,6 +110,58 @@ function PessoaComponent() {
     } catch (err) {
       setError(err.message);
     }
+  };
+
+   // Função para confirmar exclusão
+   const confirmarExclusao = async () => {
+    try {
+      await pessoaService.excluirPessoa(pessoaParaExcluir.id);
+      setPessoas(pessoas.filter(pessoa => pessoa.id !== pessoaParaExcluir.id));
+      setShowDeleteModal(false);
+      setPessoaParaExcluir(null);
+      
+      // Mensagem de sucesso
+      toast.success('Pessoa excluída com sucesso!', {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    } catch (err) {
+      setError(err.message);
+      toast.error('Erro ao excluir pessoa: ' + err.message);
+    }
+  };
+
+  // Função para abrir modal de exclusão
+  const handleExcluir = (pessoa) => {
+    setPessoaParaExcluir(pessoa);
+    setShowDeleteModal(true);
+  };
+
+  const Pagination = () => {
+    const pageNumbers = Math.ceil(pessoas.length / itemsPerPage);
+    return (
+      <nav>
+        <ul className="pagination justify-content-center">
+          {Array.from({ length: pageNumbers }).map((_, index) => (
+            <li 
+              key={index} 
+              className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}
+            >
+              <button
+                className="page-link"
+                onClick={() => setCurrentPage(index + 1)}
+              >
+                {index + 1}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    );
   };
 
   return (
@@ -354,10 +397,72 @@ function PessoaComponent() {
                 )}
               </div>
             </div>
+
+            <div className="card shadow-lg border-0">
+            {/* ... */}
+              <tbody>
+                {pessoas.map((pessoa) => (
+                  <tr key={pessoa.id}>
+                    <td>{pessoa.nome}</td>
+                    <td>{formatarCpf(pessoa.cpf)}</td>
+                    <td>
+                      {formatarEndereco(
+                        pessoa.endereco.cidade,
+                        pessoa.endereco.estado
+                      )}
+                    </td>
+                    <td>
+                      <div className="d-flex justify-content-center gap-3">
+                        <button
+                          className="btn btn-sm btn-outline-primary"
+                          onClick={() => handleEditar(pessoa)}
+                          title="Editar"
+                        >
+                          <FontAwesomeIcon icon={faPen} />
+                        </button>
+                        <button
+                          className="btn btn-sm btn-outline-danger"
+                          onClick={() => handleExcluir(pessoa)} // Modificado para abrir o modal
+                          title="Excluir"
+                        >
+                          <FontAwesomeIcon icon={faTrash} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+          </div>          
+
+          <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)} centered>
+            <Modal.Header closeButton>
+              <Modal.Title>Confirmar Exclusão</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              {pessoaParaExcluir && (
+                <p>
+                  Tem certeza que deseja excluir <strong>{pessoaParaExcluir.nome}</strong>?
+                  Esta ação não pode ser desfeita.
+                </p>
+              )}
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
+                Cancelar
+              </Button>
+              <Button variant="danger" onClick={confirmarExclusao}>
+                Excluir
+              </Button>
+            </Modal.Footer>
+          </Modal>
+          
+          <ToastContainer />
           </div>
-        </div>
       </div>
-    );
+    </div>
+    
+    
+  );
 
   // if (loading) return <div>Carregando...</div>;
   // if (error) return <div className="error">Erro: {error}</div>;
@@ -474,6 +579,5 @@ function PessoaComponent() {
   //   </div>
   // );
 }
-
 
 export default PessoaComponent;
