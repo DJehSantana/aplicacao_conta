@@ -50,17 +50,18 @@ function PessoaComponent() {
   const handleEditar = (pessoa) => {
     setPessoaSelecionada(pessoa);
     setFormData({
-      nome: pessoa.nome,
-      cpf: pessoa.cpf,
-      dataNascimento: pessoa.dataNascimento,
+      nome: pessoa?.nome ?? '',
+      cpf: pessoa?.cpf ?? '',
+      dataNascimento: pessoa?.dataNascimento ?? '',
       endereco: {
-        cep: pessoa.endereco.cep,
-        rua: pessoa.endereco.rua,
-        numero: pessoa.endereco.numero,
-        cidade: pessoa.endereco.cidade,
-        estado: pessoa.endereco.estado
+        cep: pessoa?.endereco?.cep ?? '',
+        rua: pessoa?.endereco?.rua ?? '',
+        numero: pessoa?.endereco?.numero ?? '',
+        cidade: pessoa?.endereco?.cidade ?? '',
+        estado: pessoa?.endereco?.estado ?? ''
       }
     });
+  };
     // Scroll para o formulário
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -72,6 +73,9 @@ function PessoaComponent() {
 
   // Função para formatar endereço
   const formatarEndereco = (cidade, estado) => {
+    if (!cidade && !estado) return 'Endereço não informado';
+    if (!cidade) return estado ?? 'Estado não informado';
+    if (!estado) return cidade ?? 'Cidade não informada';
     return `${cidade}/${estado}`;
   };
 
@@ -366,10 +370,10 @@ function PessoaComponent() {
                             <td>{pessoa.nome}</td>
                             <td>{formatarCpf(pessoa.cpf)}</td>
                             <td>
-                              {formatarEndereco(
-                                pessoa.endereco.cidade,
-                                pessoa.endereco.estado
-                              )}
+                            {formatarEndereco(
+                              pessoa?.endereco?.cidade,
+                              pessoa?.endereco?.estado
+                            )}
                             </td>
                             <td>
                               <div className="d-flex justify-content-center gap-3">
