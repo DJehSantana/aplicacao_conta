@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { Modal, Button } from 'react-bootstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
 import pessoaService from '../../services/PessoaService';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import './PessoaComponent.css';
 
 function PessoaComponent() {
   const [pessoas, setPessoas] = useState([]);
@@ -455,7 +461,7 @@ function PessoaComponent() {
               </Button>
             </Modal.Footer>
           </Modal>
-          
+
           <ToastContainer />
           </div>
       </div>
