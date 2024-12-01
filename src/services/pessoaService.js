@@ -1,3 +1,6 @@
+import { api } from "./api";
+
+
 const pessoaService = {
   // Listar todas as pessoas
   listarTodasPessoas: async () => {
@@ -8,7 +11,6 @@ const pessoaService = {
       throw new Error('Erro ao listar pessoas: ' + error.message);
     }
   },
-
   // Buscar pessoa por CPF
   buscarPorCpf: async (cpf) => {
     try {

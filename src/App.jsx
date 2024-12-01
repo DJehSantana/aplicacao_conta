@@ -1,6 +1,7 @@
 
 import './App.css';
-import PessoaComponent from './components/pessoa/PessoaComponent';
+import PessoaComponent from './components/Pessoa/PessoaComponent';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 function App() {
@@ -13,7 +14,7 @@ function App() {
         </header> 
           <main> 
             <PessoaComponent /> 
-            <ToastContainer 
+            {/* <ToastContainer 
               position="top-right"
               autoClose={3000}
               hideProgressBar={false}
@@ -24,7 +25,7 @@ function App() {
               draggable
               pauseOnHover
               theme="light"
-            />
+            /> */}
           </main> 
         </div>  
 

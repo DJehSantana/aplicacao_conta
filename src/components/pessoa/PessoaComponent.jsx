@@ -367,8 +367,8 @@ function PessoaComponent() {
                             <td>{formatarCpf(pessoa.cpf)}</td>
                             <td>
                               {formatarEndereco(
-                                pessoa.endereco.cidade,
-                                pessoa.endereco.estado
+                                pessoa?.endereco?.cidade,
+                                pessoa?.endereco?.estado
                               )}
                             </td>
                             <td>
