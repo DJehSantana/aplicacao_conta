@@ -14,7 +14,7 @@ const pessoaService = {
   // Buscar pessoa por CPF
   buscarPorCpf: async (cpf) => {
     try {
-      const response = await api.get(`pessoa/${cpf}`);
+      const response = await api.get(`/pessoa/${cpf}`);
       return response.data;
     } catch (error) {
       throw new Error('Erro ao buscar pessoa por CPF: ' + error.message);
@@ -24,7 +24,7 @@ const pessoaService = {
   // Buscar pessoa por ID
   buscarPorId: async (id) => {
     try {
-      const response = await api.get(`pessoa/${id}`);
+      const response = await api.get(`/pessoa/${id}`);
       return response.data;
     } catch (error) {
       throw new Error('Erro ao buscar pessoa por ID: ' + error.message);
@@ -34,7 +34,8 @@ const pessoaService = {
   // Cadastrar ou atualizar pessoa
   cadastrarAtualizarPessoa: async (pessoaData) => {
     try {
-      const response = await api.post('pessoa/', pessoaData);
+      const response = await api.post('/pessoa', pessoaData);
+      console.log(response);
       return response.data;
     } catch (error) {
       throw new Error('Erro ao cadastrar/atualizar pessoa: ' + error.message);
@@ -42,9 +43,9 @@ const pessoaService = {
   },
 
   // Excluir pessoa
-  excluirPessoa: async (id) => {
+  excluirPessoa: async (idPessoa) => {
     try {
-      await api.delete(`pessoa/${id}`);
+      await api.delete(`/pessoa/${idPessoa}`);
       return true;
     } catch (error) {
       throw new Error('Erro ao excluir pessoa: ' + error.message);

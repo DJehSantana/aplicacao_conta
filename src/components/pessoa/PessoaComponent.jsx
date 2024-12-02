@@ -48,21 +48,23 @@ function PessoaComponent() {
 
   // Função para editar pessoa
   const handleEditar = (pessoa) => {
+    
     setPessoaSelecionada(pessoa);
     setFormData({
+      idPessoa: pessoa?.idPessoa ?? '',
       nome: pessoa?.nome ?? '',
       cpf: pessoa?.cpf ?? '',
       dataNascimento: pessoa?.dataNascimento ?? '',
       endereco: {
+        idPessoa: pessoa?.idPessoa ?? '',
         cep: pessoa?.endereco?.cep ?? '',
         rua: pessoa?.endereco?.rua ?? '',
         numero: pessoa?.endereco?.numero ?? '',
         cidade: pessoa?.endereco?.cidade ?? '',
         estado: pessoa?.endereco?.estado ?? ''
       }
-    });
-  };
-    // Scroll para o formulário
+    });  
+    
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -102,9 +104,28 @@ function PessoaComponent() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      console.log(formData);
       const novaPessoa = await pessoaService.cadastrarAtualizarPessoa(formData);
-      setPessoas(prev => [...prev, novaPessoa]);
-      // Limpar formulário após sucesso
+    
+      setPessoas(prev => {
+        const pessoasFiltradas = prev.filter(pessoa => pessoa.idPessoa !== novaPessoa.idPessoa);
+        return [...pessoasFiltradas, novaPessoa];
+      });
+
+       // Mensagem de sucesso
+       toast.success(`Dados da(o) ${novaPessoa.nome} foram salvos com sucesso!` , {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+
+      // await pessoaService.cadastrarAtualizarPessoa(formData);   
+      // const listaAtualizada = await pessoaService.listarTodasPessoas();
+      // setPessoas(listaAtualizada);
+
       setFormData({
         nome: '',
         cpf: '',
@@ -119,14 +140,15 @@ function PessoaComponent() {
       });
     } catch (err) {
       setError(err.message);
+      toast.error('Erro ao atualizar dados da pessoa: ' + err.message);    
     }
   };
 
    // Função para confirmar exclusão
-   const confirmarExclusao = async () => {
+  const confirmarExclusao = async () => {
     try {
-      await pessoaService.excluirPessoa(pessoaParaExcluir.id);
-      setPessoas(pessoas.filter(pessoa => pessoa.id !== pessoaParaExcluir.id));
+      await pessoaService.excluirPessoa(pessoaParaExcluir.idPessoa);
+      setPessoas(pessoas.filter(pessoa => pessoa.idPessoa !== pessoaParaExcluir.idPessoa));
       setShowDeleteModal(false);
       setPessoaParaExcluir(null);
       
@@ -221,7 +243,7 @@ function PessoaComponent() {
                             placeholder="CPF"
                             value={formData.cpf}
                             onChange={handleInputChange}
-                            required
+                            
                           />
                           <label htmlFor="cpf">CPF</label>
                         </div>
@@ -258,7 +280,7 @@ function PessoaComponent() {
                             placeholder="CEP"
                             value={formData.endereco.cep}
                             onChange={handleInputChange}
-                            required
+                            
                           />
                           <label htmlFor="cep">CEP</label>
                         </div>
@@ -274,13 +296,13 @@ function PessoaComponent() {
                             placeholder="Rua"
                             value={formData.endereco.rua}
                             onChange={handleInputChange}
-                            required
+                            
                           />
                           <label htmlFor="rua">Rua</label>
                         </div>
                       </div>
   
-                      <div className="col-md-4">
+                      <div className="col-md-3">
                         <div className="form-floating">
                           <input
                             type="text"
@@ -290,7 +312,7 @@ function PessoaComponent() {
                             placeholder="Número"
                             value={formData.endereco.numero}
                             onChange={handleInputChange}
-                            required
+                            
                           />
                           <label htmlFor="numero">Número</label>
                         </div>
@@ -306,13 +328,13 @@ function PessoaComponent() {
                             placeholder="Cidade"
                             value={formData.endereco.cidade}
                             onChange={handleInputChange}
-                            required
+                            
                           />
                           <label htmlFor="cidade">Cidade</label>
                         </div>
                       </div>
   
-                      <div className="col-md-3">
+                      <div className="col-md-4">
                         <div className="form-floating">
                           <input
                             type="text"
@@ -322,7 +344,7 @@ function PessoaComponent() {
                             placeholder="Estado"
                             value={formData.endereco.estado}
                             onChange={handleInputChange}
-                            required
+                            
                           />
                           <label htmlFor="estado">Estado</label>
                         </div>
@@ -341,7 +363,7 @@ function PessoaComponent() {
                           <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
                           Salvando...
                         </>
-                      ) : 'Cadastrar Pessoa'}
+                      ) : 'Salvar Pessoa'}
                     </button>
                   </div>
                 </form>
@@ -386,7 +408,7 @@ function PessoaComponent() {
                                 </button>
                                 <button
                                   className="btn btn-sm btn-outline-danger"
-                                  onClick={() => handleExcluir(pessoa.id)}
+                                  onClick={() => handleExcluir(pessoa)}
                                   title="Excluir"
                                 >
                                   <FontAwesomeIcon icon={faTrash} />
@@ -406,44 +428,7 @@ function PessoaComponent() {
                   </div>
                 )}
               </div>
-            </div>
-
-            <div className="card shadow-lg border-0">
-            {/* ... */}
-              <tbody>
-                {pessoas.map((pessoa) => (
-                  <tr key={pessoa.id}>
-                    <td>{pessoa.nome}</td>
-                    <td>{formatarCpf(pessoa.cpf)}</td>
-                    <td>
-                      {formatarEndereco(
-                        pessoa.endereco.cidade,
-                        pessoa.endereco.estado
-                      )}
-                    </td>
-                    <td>
-                      <div className="d-flex justify-content-center gap-3">
-                        <button
-                          className="btn btn-sm btn-outline-primary"
-                          onClick={() => handleEditar(pessoa)}
-                          title="Editar"
-                        >
-                          <FontAwesomeIcon icon={faPen} />
-                        </button>
-                        <button
-                          className="btn btn-sm btn-outline-danger"
-                          onClick={() => handleExcluir(pessoa)} // Modificado para abrir o modal
-                          title="Excluir"
-                        >
-                          <FontAwesomeIcon icon={faTrash} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-          </div>          
-
+            </div>           
           <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)} centered>
             <Modal.Header closeButton>
               <Modal.Title>Confirmar Exclusão</Modal.Title>
@@ -472,7 +457,9 @@ function PessoaComponent() {
     </div>
     
     
+    
   );
+};
 
   // if (loading) return <div>Carregando...</div>;
   // if (error) return <div className="error">Erro: {error}</div>;
@@ -588,6 +575,6 @@ function PessoaComponent() {
   //     </form>
   //   </div>
   // );
-}
+
 
 export default PessoaComponent;
